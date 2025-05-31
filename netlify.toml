@@ -1,7 +1,7 @@
 [build]
-  functions = "netlify/functions"  # Path to where your functions are stored
-  publish = "public"               # Directory where your static files (HTML, CSS, JS) are stored
+  command = "npm run install-yt-dlp && npm run build-site"
+  functions = "netlify/functions"
+  publish = "public"
 
-[dev]
-  functions = "netlify/functions"  # During local dev, Netlify should look here for functions
-  publish = "public"               # Directory for static assets in local dev
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
