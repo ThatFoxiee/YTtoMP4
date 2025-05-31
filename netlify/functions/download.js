@@ -1,7 +1,6 @@
 const ytdlp = require('ytdlp-nodejs'); // Correct import for ytdlp
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
 
 exports.handler = async function(event, context) {
   const videoUrl = event.queryStringParameters.url;
@@ -13,35 +12,35 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Use the /tmp directory for temporary file storage on Netlify
+  // Use /tmp directory for storing the downloaded file
   const outputPath = path.join('/tmp', 'video.mp4');
+
+  // Check if the file already exists (Netlify has read-only file system)
+  if (fs.existsSync(outputPath)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ success: false, message: 'File already exists, please try again' }),
+    };
+  }
 
   // Log the URL and output path for debugging
   console.log(`Attempting to download video from: ${videoUrl}`);
   console.log(`Saving video to: ${outputPath}`);
 
   try {
-    // Execute the yt-dlp command to download the video to the /tmp directory
-    const command = `yt-dlp -f best -o "${outputPath}" "${videoUrl}"`;
-
-    // Execute the command
-    await new Promise((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error: ${error.message}`);
-          reject(error);
-        } else {
-          console.log(stdout);
-          resolve();
-        }
-      });
+    // Use ytdlp to download the video
+    await ytdlp.download(videoUrl, {
+      output: outputPath,
+      format: 'best',
     });
+
+    console.log('Download complete:', outputPath);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/download-video?path=${encodeURIComponent(outputPath)}`,
+        download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/serve-video?path=${encodeURIComponent(outputPath)}`,
       }),
     };
   } catch (error) {
