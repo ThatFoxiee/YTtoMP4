@@ -12,10 +12,10 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Use /tmp directory for storing the downloaded file
+  // Use /tmp directory for storing the downloaded file (Netlify allows writing here)
   const outputPath = path.join('/tmp', 'video.mp4');
 
-  // Check if the file already exists (Netlify has read-only file system)
+  // Check if the file already exists (Netlify has a read-only file system, so /tmp is the only writable directory)
   if (fs.existsSync(outputPath)) {
     return {
       statusCode: 400,
@@ -28,13 +28,10 @@ exports.handler = async function(event, context) {
   console.log(`Saving video to: ${outputPath}`);
 
   try {
-    // Use ytdlp to download the video
-    await ytdlp.download_url(videoUrl, {
-      output: outputPath,
-      format: 'best',
-    });
+    // Using ytdlp.exec() to download the video
+    const result = await ytdlp.exec([videoUrl, '-o', outputPath, '-f', 'best']);
 
-    console.log('Download complete:', outputPath);
+    console.log('Download complete:', result);
 
     return {
       statusCode: 200,
