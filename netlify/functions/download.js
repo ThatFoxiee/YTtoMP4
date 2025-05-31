@@ -1,7 +1,7 @@
-const { exec } = require('child_process');
+// functions/download.js
+const ytdlp = require('ytdlp-nodejs');
 const path = require('path');
 const fs = require('fs');
-const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
   const videoUrl = event.queryStringParameters.url;
@@ -13,7 +13,6 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Output path to save the video
   const outputPath = path.join(__dirname, '..', 'public', 'downloads', 'video.mp4');
 
   // Check if the download folder exists; if not, create it
@@ -21,27 +20,22 @@ exports.handler = async function(event, context) {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   }
 
-  // Run the yt-dlp command to download the video
-  const command = `yt-dlp -f best -o "${outputPath}" "${videoUrl}"`;
+  try {
+    // Download the video
+    await ytdlp.exec([videoUrl, '-o', outputPath]);
 
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return resolve({
-          statusCode: 500,
-          body: JSON.stringify({ success: false, message: stderr }),
-        });
-      }
-
-      // Return the download URL (ensure it’s publicly accessible)
-      return resolve({
-        statusCode: 200,
-        body: JSON.stringify({
-          success: true,
-          download_url: `https://zingy-cobbler-a0d226.netlify.app/downloads/video.mp4`,
-        }),
-      });
-    });
-  });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        download_url: `https://zingy-cobbler-a0d226.netlify.app/downloads/video.mp4`,
+      }),
+    };
+  } catch (error) {
+    console.error('Download failed:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ success: false, message: 'Download failed' }),
+    };
+  }
 };
