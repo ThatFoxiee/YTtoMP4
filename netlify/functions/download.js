@@ -29,7 +29,7 @@ exports.handler = async function(event, context) {
 
   try {
     // Use ytdlp to download the video
-    await ytdlp.download(videoUrl, {
+    await ytdlp.YtDlp.download(videoUrl, {
       output: outputPath,
       format: 'best',
     });
