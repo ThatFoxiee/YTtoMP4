@@ -1,2 +1,5 @@
-# Local Netlify folder
+# Ignore the local Netlify folder
 .netlify
+
+# Ignore everything inside node_modules/@next
+node_modules/@next/*
