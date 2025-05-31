@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^5.1.0",
+    "netlify-cli": "^21.5.0",
     "ytdlp-nodejs": "^2.3.0"
   },
   "devDependencies": {
