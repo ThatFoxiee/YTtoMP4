@@ -1,7 +1,7 @@
-// functions/download.js
-const ytdlp = require('ytdlp-nodejs');
+const ytdlp = require('ytdlp-nodejs'); // Correct import for ytdlp
 const path = require('path');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 exports.handler = async function(event, context) {
   const videoUrl = event.queryStringParameters.url;
@@ -25,8 +25,21 @@ exports.handler = async function(event, context) {
     console.log(`Attempting to download video from: ${videoUrl}`);
     console.log(`Saving video to: ${outputPath}`);
 
-    // Download the video
-    await ytdlp.exec([videoUrl, '-o', outputPath]);
+    // Use yt-dlp (via exec) to download the video
+    const command = `yt-dlp -f best -o "${outputPath}" "${videoUrl}"`;
+
+    // Execute the yt-dlp command
+    await new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          reject(error);
+        } else {
+          console.log(stdout);
+          resolve();
+        }
+      });
+    });
 
     return {
       statusCode: 200,
