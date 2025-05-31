@@ -1,4 +1,4 @@
-const ytdlp = require('ytdlp-nodejs'); // Correct import for ytdlp
+const { exec } = require('child_process'); // Import exec from child_process
 const path = require('path');
 const fs = require('fs');
 
@@ -19,28 +19,34 @@ exports.handler = async function(event, context) {
   console.log(`Attempting to download video from: ${videoUrl}`);
   console.log(`Saving video to: ${outputPath}`);
 
-  try {
-    // Use ytdlp.download() to download the video
-    const result = await ytdlp.download(videoUrl, {
-      output: outputPath,
-      format: 'best',
+  // Construct the yt-dlp command
+  const command = `yt-dlp -f best -o "${outputPath}" "${videoUrl}"`;
+
+  return new Promise((resolve, reject) => {
+    // Execute the command
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        // If an error occurs, log the error and return a failure response
+        console.error(`Error: ${stderr}`);
+        resolve({
+          statusCode: 500,
+          body: JSON.stringify({
+            success: false,
+            message: 'Download failed',
+            error: stderr,
+          }),
+        });
+      } else {
+        // If the download is successful, return the download URL
+        console.log('Download complete:', stdout);
+        resolve({
+          statusCode: 200,
+          body: JSON.stringify({
+            success: true,
+            download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/serve-video?path=${encodeURIComponent(outputPath)}`,
+          }),
+        });
+      }
     });
-
-    console.log('Download complete:', result);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/serve-video?path=${encodeURIComponent(outputPath)}`,
-      }),
-    };
-  } catch (error) {
-    // Log the error for debugging
-    console.error('Download failed:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, message: 'Download failed', error: error.message }),
-    };
-  }
+  });
 };
