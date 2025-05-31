@@ -61,7 +61,7 @@
             downloadButton.style.display = "inline-block"
             downloadButton.textContent = 'Processing...';
 
-            fetch(`/api/download?url=${encodeURIComponent(videoUrl)}`)
+            fetch(`/.netlify/functions/download?url=${encodeURIComponent(videoUrl)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

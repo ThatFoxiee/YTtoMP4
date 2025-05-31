@@ -1,7 +1,7 @@
 [build]
-  functions = "functions"  # Folder where your functions will be stored
-  publish = "public"  # The directory to publish to Netlify
+  functions = "netlify/functions"  # Path to where your functions are stored
+  publish = "public"               # Directory where your static files (HTML, CSS, JS) are stored
 
 [dev]
-  functions = "functions"  # Path to the functions during local dev
-  publish = "public"  # The directory for the dev environment
+  functions = "netlify/functions"  # During local dev, Netlify should look here for functions
+  publish = "public"               # Directory for static assets in local dev
