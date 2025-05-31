@@ -12,11 +12,13 @@ exports.handler = async function(event, context) {
     };
   }
 
-  const outputPath = path.join(__dirname, '..', 'public', 'downloads', 'video.mp4');
+  // Use /tmp as the directory to store the downloaded video
+  const outputPath = path.join('/tmp', 'video.mp4'); // Save the video in /tmp
 
   // Check if the download folder exists; if not, create it
-  if (!fs.existsSync(path.dirname(outputPath))) {
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  const dirPath = path.dirname(outputPath);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
   }
 
   try {
@@ -43,7 +45,7 @@ exports.handler = async function(event, context) {
             statusCode: 200,
             body: JSON.stringify({
               success: true,
-              download_url: `https://zingy-cobbler-a0d226.netlify.app/downloads/video.mp4`,
+              download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/downloads/video.mp4`,
             }),
           });
         }
