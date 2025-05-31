@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "download.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run install-yt-dlp && npm run build-site",
+    "install-yt-dlp": "curl -L https://github.com/yt-dlp/yt-dlp/releases/download/2025.06.01/yt-dlp_linux -o netlify/functions/yt-dlp && chmod +x netlify/functions/yt-dlp",
+    "build-site": "next build"
   },
   "keywords": [],
   "author": "",
