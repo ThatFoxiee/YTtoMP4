@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run install-yt-dlp && npm run build-site"  # Ensure yt-dlp is installed before building the site
   functions = "netlify/functions"
   publish = "public"
 

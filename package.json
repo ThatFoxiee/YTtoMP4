@@ -4,7 +4,7 @@
   "main": "download.js",
   "scripts": {
     "build": "npm run install-yt-dlp && npm run build-site",
-    "install-yt-dlp": "curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o netlify/functions/yt-dlp && chmod +x netlify/functions/yt-dlp",
+    "install-yt-dlp": "curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o netlify/functions/yt-dlp && chmod +x netlify/functions/yt-dlp", 
     "build-site": "next build"
   },
   "keywords": [],
