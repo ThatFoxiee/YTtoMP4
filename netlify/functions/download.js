@@ -12,10 +12,10 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Use /tmp as the directory to store the downloaded video
-  const outputPath = path.join('/tmp', 'video.mp4'); // Save the video in /tmp
+  // Save the video to the /tmp folder
+  const outputPath = path.join('/tmp', 'video.mp4');  // Use /tmp for Netlify functions
 
-  // Check if the download folder exists; if not, create it
+  // Check if the output folder exists; if not, create it
   const dirPath = path.dirname(outputPath);
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
@@ -27,7 +27,7 @@ exports.handler = async function(event, context) {
     console.log(`Saving video to: ${outputPath}`);
 
     // Path to the yt-dlp binary (from netlify/functions)
-    const ytDlpPath = path.join(__dirname, 'yt-dlp'); // relative path
+    const ytDlpPath = path.join(__dirname, 'yt-dlp');  // Reference the yt-dlp binary in the current folder
 
     // Run the yt-dlp binary with exec
     const command = `${ytDlpPath} -f best -o "${outputPath}" "${videoUrl}"`;
