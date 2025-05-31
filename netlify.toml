@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm run install-yt-dlp && npm run build-site"
+  command = "npm install && echo 'Installing yt-dlp...' && npm run install-yt-dlp && npm run build-site"
   functions = "netlify/functions"
   publish = "public"
 
