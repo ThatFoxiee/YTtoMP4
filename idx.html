@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        #download {
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        #download-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #download-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="download.js" defer></script>
+</head>
+
+<body>
+    <h1>YouTube Downloader</h1>
+    <form id="download-form">
+        <input type="text" id="video-url" placeholder="Enter YouTube video URL" required>
+        <button type="submit">Download</button>
+    </form>
+
+    <div id="download">
+        <button id="download-button" style="display:none;">Download Video</button>
+        <a id="hidden-download-link" style="display:none;"></a>
+    </div>
+
+    <script>
+        const downloadButton = document.getElementById('download-button');
+        const hiddenLink = document.getElementById('hidden-download-link');
+        document.getElementById('download-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const videoUrl = document.getElementById('video-url').value;
+
+            downloadButton.style.display = "inline-block"
+            downloadButton.textContent = 'Processing...';
+
+            fetch(`/api/download?url=${encodeURIComponent(videoUrl)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the button to show the actual download URL and reveal it
+                        downloadButton.textContent = 'Download Video';
+                        downloadButton.style.display = 'inline-block';
+
+                        // Set the hidden link's href to the download URL
+                        hiddenLink.href = data.download_url;
+                        hiddenLink.download = 'video.mp4'; // Optional: set default download filename
+                        hiddenLink.style.display = "inline-block"
+                        // Trigger the hidden link to start the download
+                        //hiddenLink.click(); 
+                    } else {
+                        alert('Download failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Something went wrong. Please try again later.');
+                });
+        });
+        downloadButton.addEventListener("click", function () {
+            if (downloadButton.textContent != "Download Video") return
+            hiddenLink.click()
+        })
+    </script>
+</body>
+
+</html>
