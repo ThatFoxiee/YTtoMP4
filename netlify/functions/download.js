@@ -13,22 +13,18 @@ exports.handler = async function(event, context) {
     };
   }
 
-  const outputPath = path.join(__dirname, '..', 'public', 'downloads', 'video.mp4');
+  // Use the /tmp directory for temporary file storage on Netlify
+  const outputPath = path.join('/tmp', 'video.mp4');
 
-  // Check if the download folder exists; if not, create it
-  if (!fs.existsSync(path.dirname(outputPath))) {
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  }
+  // Log the URL and output path for debugging
+  console.log(`Attempting to download video from: ${videoUrl}`);
+  console.log(`Saving video to: ${outputPath}`);
 
   try {
-    // Log the URL and output path for debugging
-    console.log(`Attempting to download video from: ${videoUrl}`);
-    console.log(`Saving video to: ${outputPath}`);
-
-    // Use yt-dlp (via exec) to download the video
+    // Execute the yt-dlp command to download the video to the /tmp directory
     const command = `yt-dlp -f best -o "${outputPath}" "${videoUrl}"`;
 
-    // Execute the yt-dlp command
+    // Execute the command
     await new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -45,7 +41,7 @@ exports.handler = async function(event, context) {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        download_url: `https://zingy-cobbler-a0d226.netlify.app/downloads/video.mp4`,
+        download_url: `https://zingy-cobbler-a0d226.netlify.app/.netlify/functions/download-video?path=${encodeURIComponent(outputPath)}`,
       }),
     };
   } catch (error) {
