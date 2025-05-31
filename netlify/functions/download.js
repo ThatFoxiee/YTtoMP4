@@ -21,6 +21,10 @@ exports.handler = async function(event, context) {
   }
 
   try {
+    // Log the URL and output path for debugging
+    console.log(`Attempting to download video from: ${videoUrl}`);
+    console.log(`Saving video to: ${outputPath}`);
+
     // Download the video
     await ytdlp.exec([videoUrl, '-o', outputPath]);
 
@@ -32,10 +36,11 @@ exports.handler = async function(event, context) {
       }),
     };
   } catch (error) {
+    // Log the error for debugging
     console.error('Download failed:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ success: false, message: 'Download failed' }),
+      body: JSON.stringify({ success: false, message: 'Download failed', error: error.message }),
     };
   }
 };
